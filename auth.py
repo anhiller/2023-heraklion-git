@@ -1,6 +1,8 @@
 import json
 import getpass
 import hashlib
+import random
+import char_set
 
 PATH = "./pwdb.json"
 
@@ -30,13 +32,18 @@ def authenticate(username, password, pwdb):
         write_pwdb(pwdb)
 
 def add_user(username, password, pwdb):
-    pwdb[username] = pwhash(password)
+    salted_pw = password + create_salt()
+    pwdb[username] = pwhash(salted_pw)
     return pwdb
 
 
 def pwhash(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
+
+def create_salt():
+    salt = "".join([chr(random.randrange(33, 127)) for i in range(20)])
+    return salt
 
 username, password = get_credentials()
 pwdb = read_pwdb()
